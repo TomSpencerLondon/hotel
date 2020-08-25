@@ -1,16 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 
 import { BookingService } from './booking.service';
+import {IdGenerator} from '../utils/idGenerator';
 
 describe('BookingService', () => {
-  let service: BookingService;
+  let bookingService: BookingService;
 
   beforeEach(() => {
+    const idGenerator = new IdGenerator();
+    bookingService = new BookingService(idGenerator);
     TestBed.configureTestingModule({});
-    service = TestBed.inject(BookingService);
+    bookingService = TestBed.inject(BookingService);
   });
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(bookingService).toBeTruthy();
   });
 });
