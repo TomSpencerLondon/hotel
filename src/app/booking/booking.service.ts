@@ -7,11 +7,15 @@ import {IdGenerator} from '../utils/idGenerator';
 })
 export class BookingService {
 
-  constructor(private idGenerator: IdGenerator) { }
+  constructor(private idGenerator?: IdGenerator) { }
 
   book(employeeId: number, hotelId: number, roomType: string, checkIn: Date, checkOut: Date): Booking {
     const booking = new Booking();
-    booking.uuid = this.idGenerator.generate();
+
+    if (this.idGenerator) {
+      booking.uuid = this.idGenerator.generate();
+    }
+
     booking.employeeId = employeeId;
     booking.hotelId = hotelId;
     booking.roomType = roomType;

@@ -6,4 +6,7 @@ import { Injectable } from '@angular/core';
 export class CompanyService {
 
   constructor() { }
+
+  addEmployee(companyId: number, employeeId: number): void {
+  }
 }

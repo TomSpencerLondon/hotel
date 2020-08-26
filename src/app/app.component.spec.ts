@@ -1,30 +1,34 @@
-import {async, TestBed} from '@angular/core/testing';
+import {async} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {HotelService} from './hotel/hotel.service';
 import {CompanyService} from './company/company.service';
 import {BookingService} from './booking/booking.service';
 import {Booking} from './model/Booking';
-import {IdGenerator} from './utils/idGenerator';
-
+import {PolicyService} from './policy/policy.service';
+import {InsufficientCompanyPolicyException} from './exceptions/insufficientCompanyPolicyException';
+import {InsufficientEmployeePolicyException} from "./exceptions/insufficientEmployeePolicyException";
 describe('AppComponent', () => {
 
   let hotelService: HotelService;
   let companyService: CompanyService;
   let bookingService: BookingService;
+  let policyService: PolicyService;
+  const hotelId = 1;
+  const employeeId = 2;
+  const roomType = 'STANDARD';
+  const checkIn = new Date('01/01/2020');
+  const checkOut = new Date('10/01/2020');
+  const hotelName = 'Mariott - London';
 
   beforeEach(async(() => {
     hotelService = new HotelService();
     companyService = new CompanyService();
-
+    policyService = new PolicyService();
+    bookingService = new BookingService();
   }));
 
   it('should allow booking for an employee', () => {
     // given
-    const hotelId = 1;
-    const employeeId = 2;
-    const roomType = 'Standard';
-    const checkIn = new Date('01/01/2020');
-    const checkOut = new Date('10/01/2020');
 
     const idGenerator = {
       generate: jest.fn()
@@ -45,10 +49,45 @@ describe('AppComponent', () => {
     expect(booking.checkOut).toBe(checkOut);
   });
 
-  it(`should '`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('hotel');
+
+
+  it(`should fail booking given insufficient company policy`, () => {
+    // Given
+
+    hotelService.addHotel(hotelId, hotelName);
+    const roomNumber = 1;
+    const companyId = 1;
+    hotelService.setRoom(hotelId, roomNumber, 'MASTER');
+
+    companyService.addEmployee(companyId, employeeId);
+
+    const roomTypes = ['STANDARD'];
+    policyService.setCompany(companyId, roomTypes);
+
+    // When
+    // Then
+    expect(() => bookingService.book(employeeId, hotelId, roomType, checkIn, checkOut))
+      .toThrow(InsufficientCompanyPolicyException);
+  });
+
+  it('should fail booking given insufficient employee policy', () => {
+    // Given
+    hotelService.addHotel(hotelId, hotelName);
+    const roomNumber = 1;
+    const companyId = 1;
+    hotelService.setRoom(hotelId, roomNumber, 'MASTER');
+
+    companyService.addEmployee(companyId, employeeId);
+
+    const companyRoomTypes = ['STANDARD', 'MASTER'];
+    policyService.setCompany(companyId, companyRoomTypes);
+
+    const employeeRoomTypes = ['STANDARD'];
+    policyService.setEmployee(employeeId, employeeRoomTypes);
+    // when
+    // Then
+    expect(() => bookingService.book(employeeId, hotelId, roomType, checkIn, checkOut))
+      .toThrow(InsufficientEmployeePolicyException);
   });
 
 });
