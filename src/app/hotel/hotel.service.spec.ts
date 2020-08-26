@@ -1,14 +1,30 @@
-import { TestBed } from '@angular/core/testing';
-
-import { HotelService } from './hotel.service';
+import {HotelService} from './hotel.service';
 import {HotelExistsException} from '../exceptions/hotelExistsException';
+import {Hotel} from '../model/Hotel';
+import {Room} from '../model/Room';
+import {HotelNotExistsException} from '../exceptions/hotelNotExistsException';
 
 describe('HotelService', () => {
   let hotelService: HotelService;
+  let hotelRepository;
+  let roomRepository;
+
+  const hotelId = 1;
+  const hotelName = 'Marriott - London';
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    hotelService = TestBed.inject(HotelService);
+    hotelRepository = {
+      persist: jest.fn(),
+      findById: jest.fn()
+    };
+
+    roomRepository = {
+      persist: jest.fn(),
+      update: jest.fn(),
+      findByHotelAndNumber: jest.fn()
+    };
+
+    hotelService = new HotelService(hotelRepository, roomRepository);
   });
 
   it('should be created', () => {
@@ -16,10 +32,6 @@ describe('HotelService', () => {
   });
 
   it('should add a hotel', () => {
-    // given
-    const hotelId = 1;
-    const hotelName = 'Marriott - London';
-
     // when
     hotelService.addHotel(hotelId, hotelName);
     // then
@@ -28,13 +40,53 @@ describe('HotelService', () => {
 
   it('should not add a hotel', () => {
     // given
-    const hotelId = 1;
-    const hotelName = 'Marriott - London';
-    hotelService.addHotel(hotelId, hotelName);
+    hotelRepository.findById.mockReturnValue(new Hotel());
 
     // when
     // then
     expect(() => hotelService.addHotel(hotelId, hotelName))
       .toThrow(HotelExistsException);
+  });
+
+  it('should set a room', () => {
+    // given
+    const roomNumber = 1;
+    const roomType = 'STANDARD';
+
+    // when
+    hotelRepository.findById.mockReturnValue(true);
+    hotelService.setRoom(hotelId, roomNumber, roomType);
+
+    // then
+    expect(roomRepository.persist.mock.calls.length).toBe(1);
+  });
+
+  it('should update a room', () => {
+    // given
+    const roomNumber = 1;
+    const roomType = 'STANDARD';
+
+    hotelRepository.findById.mockReturnValue(true);
+    roomRepository.findByHotelAndNumber.mockReturnValue(new Room());
+
+    // when
+    hotelService.setRoom(hotelId, roomNumber, roomType);
+
+    // then
+    expect(roomRepository.update.mock.calls.length).toBe(1);
+    expect(roomRepository.persist.mock.calls.length).toBe(0);
+  });
+
+  it('should ', () => {
+    // given
+    const roomNumber = 1;
+    const roomType = 'STANDARD';
+
+    hotelRepository.findById.mockReturnValue(false);
+
+    // when
+    // then
+    expect(() => hotelService.setRoom(hotelId, roomNumber, roomType))
+      .toThrow(HotelNotExistsException);
   });
 });

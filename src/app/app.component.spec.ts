@@ -6,13 +6,18 @@ import {BookingService} from './booking/booking.service';
 import {Booking} from './model/Booking';
 import {PolicyService} from './policy/policy.service';
 import {InsufficientCompanyPolicyException} from './exceptions/insufficientCompanyPolicyException';
-import {InsufficientEmployeePolicyException} from "./exceptions/insufficientEmployeePolicyException";
+import {InsufficientEmployeePolicyException} from './exceptions/insufficientEmployeePolicyException';
+import {HotelRepository} from './repository/HotelRepository';
+import {RoomRepository} from './repository/RoomRepository';
 describe('AppComponent', () => {
 
   let hotelService: HotelService;
   let companyService: CompanyService;
   let bookingService: BookingService;
   let policyService: PolicyService;
+  let hotelRepository: HotelRepository;
+  let roomRepository: RoomRepository;
+
   const hotelId = 1;
   const employeeId = 2;
   const roomType = 'STANDARD';
@@ -21,7 +26,9 @@ describe('AppComponent', () => {
   const hotelName = 'Mariott - London';
 
   beforeEach(async(() => {
-    hotelService = new HotelService();
+    hotelRepository = new HotelRepository();
+    roomRepository = new RoomRepository();
+    hotelService = new HotelService(hotelRepository, roomRepository);
     companyService = new CompanyService();
     policyService = new PolicyService();
     bookingService = new BookingService();
