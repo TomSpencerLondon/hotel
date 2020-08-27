@@ -13,17 +13,21 @@ export class CompanyService {
   constructor(private companyRepository: CompanyRepository,
               private employeeRepository: EmployeeRepository) { }
 
-  addEmployee(companyId: number, employeeId: number): void {
-    const employee: Employee = new Employee(employeeId);
+
+
+addEmployee(companyId: number, employeeId: number): void {
+  let company: Company = this.companyRepository.findById(companyId);
+
+  if (!company){
+     company = new Company(companyId);
+     this.companyRepository.persist(company);
+  }
+
+  let employee: Employee = this.employeeRepository.findById(employeeId);
+
+  if (!employee) {
+    employee = new Employee(employeeId);
     this.employeeRepository.persist(employee);
-
-    if (this.companyRepository.findById(companyId)){
-      throw new CompanyExistsException('');
-    }
-
-    const company: Company = new Company(companyId);
-    this.companyRepository.persist(company);
-
-
+  }
   }
 }

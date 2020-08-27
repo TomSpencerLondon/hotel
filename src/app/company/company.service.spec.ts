@@ -1,25 +1,24 @@
-import { TestBed } from '@angular/core/testing';
-
-import { CompanyService } from './company.service';
+import {CompanyService} from './company.service';
 import {Company} from '../model/Company';
 import {Employee} from '../model/Employee';
-import {HotelNotExistsException} from "../exceptions/hotelNotExistsException";
-import {CompanyExistsException} from "../exceptions/companyExistsException";
 
 describe('CompanyService', () => {
   let companyService: CompanyService;
   const companyId = 1;
   const employeeId = 1;
-  const companyRepository = {
-    persist: jest.fn(),
-    findById: jest.fn()
-  };
-
-  const employeeRepository = {
-    persist: jest.fn()
-  };
+  let companyRepository;
+  let employeeRepository;
 
   beforeEach(() => {
+    companyRepository = {
+      persist: jest.fn(),
+      findById: jest.fn()
+    };
+
+    employeeRepository = {
+      persist: jest.fn(),
+      findById: jest.fn()
+    };
     companyService = new CompanyService(companyRepository, employeeRepository);
   });
 
@@ -37,9 +36,8 @@ describe('CompanyService', () => {
     // given
     companyRepository.findById.mockReturnValue(new Company(companyId));
     // when
+    companyService.addEmployee(companyId, employeeId);
     // then
-    expect(() => companyService.addEmployee(companyId, employeeId))
-      .toThrow(CompanyExistsException);
     expect(companyRepository.persist.mock.calls.length).toBe(0);
     expect(employeeRepository.persist.mock.calls[0][0] instanceof Employee).toBeTruthy();
 
@@ -51,5 +49,16 @@ describe('CompanyService', () => {
     companyService.addEmployee(companyId, employeeId);
     // then
     expect(employeeRepository.persist.mock.calls[0][0] instanceof Employee).toBeTruthy();
+  });
+
+  it('should not add employee if already exists in the same company', () => {
+    // given
+    companyRepository.findById.mockReturnValue(new Company(companyId));
+    employeeRepository.findById.mockReturnValue(new Employee(employeeId));
+    // when
+    companyService.addEmployee(companyId, employeeId);
+    // then
+
+    expect(employeeRepository.persist.mock.calls.length).toBe(0);
   });
 });
