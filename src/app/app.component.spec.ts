@@ -9,6 +9,8 @@ import {InsufficientCompanyPolicyException} from './exceptions/insufficientCompa
 import {InsufficientEmployeePolicyException} from './exceptions/insufficientEmployeePolicyException';
 import {HotelRepository} from './repository/HotelRepository';
 import {RoomRepository} from './repository/RoomRepository';
+import {CompanyRepository} from './repository/CompanyRepository';
+import {EmployeeRepository} from "./repository/EmployeeRepository";
 describe('AppComponent', () => {
 
   let hotelService: HotelService;
@@ -17,6 +19,8 @@ describe('AppComponent', () => {
   let policyService: PolicyService;
   let hotelRepository: HotelRepository;
   let roomRepository: RoomRepository;
+  let companyRepository: CompanyRepository;
+  let employeeRepository: EmployeeRepository;
 
   const hotelId = 1;
   const employeeId = 2;
@@ -29,7 +33,9 @@ describe('AppComponent', () => {
     hotelRepository = new HotelRepository();
     roomRepository = new RoomRepository();
     hotelService = new HotelService(hotelRepository, roomRepository);
-    companyService = new CompanyService();
+    companyRepository = new CompanyRepository();
+    employeeRepository = new EmployeeRepository();
+    companyService = new CompanyService(companyRepository, employeeRepository);
     policyService = new PolicyService();
     bookingService = new BookingService();
   }));
