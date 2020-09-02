@@ -5,6 +5,7 @@ import {PolicyExistsException} from '../exceptions/policyExistsException';
 import {EmployeePolicy} from '../model/EmployeePolicy';
 import {EmployeeRepository} from '../repository/EmployeeRepository';
 import {Policy} from '../model/Policy';
+import {CompanyPolicy} from "../model/CompanyPolicy";
 
 @Injectable({
   providedIn: 'root'
@@ -43,18 +44,14 @@ export class PolicyService {
 
   isBookingAllowed(employeeId: number, roomType: RoomTypes): boolean {
     const employeePolicy = this.policyRepository.findForEmployee(employeeId);
-    let companyPolicy;
-
-    const employee = this.employeeRepository.findById(employeeId);
-
-    if (employee){
-      companyPolicy = this.policyRepository.findForCompany(employee.company.id);
-    }
 
     if (employeePolicy){
       return this.isPolicySufficient(employeePolicy, roomType);
-    }else if (companyPolicy){
-      return this.isPolicySufficient(companyPolicy, roomType);
+    }else {
+      const companyPolicy = this.findCompanyPolicy(employeeId);
+      if (companyPolicy){
+        return this.isPolicySufficient(companyPolicy, roomType);
+      }
     }
 
     return true;
@@ -62,5 +59,14 @@ export class PolicyService {
 
   private isPolicySufficient(policy: Policy, roomType: RoomTypes): boolean {
     return policy && policy.roomTypes.includes(roomType);
+  }
+
+  private findCompanyPolicy(employeeId: number): CompanyPolicy{
+    const employee = this.employeeRepository.findById(employeeId);
+
+    if (employee){
+      return this.policyRepository.findForCompany(employee.company.id);
+    }
+    return null;
   }
 }
