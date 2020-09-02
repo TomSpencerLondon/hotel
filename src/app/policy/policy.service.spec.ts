@@ -185,4 +185,33 @@ describe('PolicyService', () => {
     // then
     expect(isBookingAllowed).toBeFalsy();
   });
+
+  it('employee policy allows but company does not allow', () => {
+    // when
+    const roomType = RoomTypes.MASTER;
+
+    const companyPolicy = new CompanyPolicy();
+    companyPolicy.companyId = companyId;
+    companyPolicy.roomTypes = [RoomTypes.STANDARD];
+
+    const employeePolicy = new EmployeePolicy();
+    employeePolicy.employeeId = employeeId;
+    employeePolicy.roomTypes = [RoomTypes.MASTER];
+
+    const company = new Company(companyId);
+    const employee = new Employee(employeeId);
+    employee.company = company;
+
+    policyRepository.findForCompany.mockReturnValue(companyPolicy);
+    policyRepository.findForEmployee.mockReturnValue(employeePolicy);
+    employeeRepository.findById.mockReturnValue(employee);
+
+    // when
+    const isBookingAllowed = policyService.isBookingAllowed(employeeId, roomType);
+
+    // then
+    expect(isBookingAllowed).toBeTruthy();
+  });
+
+
 });
