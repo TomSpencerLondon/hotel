@@ -39,7 +39,7 @@ describe('AppComponent', () => {
     hotelService = new HotelService(hotelRepository, roomRepository);
     companyRepository = new CompanyRepository();
     employeeRepository = new EmployeeRepository();
-    companyService = new CompanyService(companyRepository, employeeRepository);
+    companyService = new CompanyService(companyRepository, employeeRepository, policyRepository);
     policyService = new PolicyService(policyRepository, employeeRepository);
     bookingService = new BookingService();
   }));
@@ -66,7 +66,7 @@ describe('AppComponent', () => {
     expect(booking.checkOut).toBe(checkOut);
   });
 
-  it('should not allow booking given employee was deleted', () => {
+  it('should allow booking if employee was deleted', () => {
     // Given
     const companyId = 1;
     companyService.addEmployee(companyId, employeeId);
@@ -79,8 +79,20 @@ describe('AppComponent', () => {
     companyService.deleteEmployee(employeeId);
 
     // Then
-    expect(policyService.isBookingAllowed(employeeId, roomType)).toBeFalsy();
+    expect(policyService.isBookingAllowed(employeeId, roomType)).toBeTruthy();
 
+  });
+
+  it('should add and find a hotel', () => {
+    // given
+    hotelService.addHotel(hotelId, hotelName);
+
+    // when
+    const hotel = hotelService.findHotelById(hotelId);
+
+    //
+    expect(hotel.id).toBe(hotelId);
+    expect(hotel.name).toBe(hotelName);
   });
 
   it(`should fail booking given insufficient company policy`, () => {

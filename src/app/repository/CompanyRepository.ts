@@ -1,11 +1,13 @@
 import {Company} from '../model/Company';
 
 export class CompanyRepository {
-  public persist(companyId: Company): void {
+  private companies = new Map<number, Company>();
+
+  public persist(company: Company): void {
+    this.companies.set(company.id, company);
   }
 
   public findById(companyId: number): Company {
-    return null;
+    return this.companies.get(companyId);
   }
-
 }

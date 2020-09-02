@@ -8,6 +8,7 @@ describe('CompanyService', () => {
   const employeeId = 1;
   let companyRepository;
   let employeeRepository;
+  let policyRepository;
 
   beforeEach(() => {
     companyRepository = {
@@ -20,7 +21,12 @@ describe('CompanyService', () => {
       findById: jest.fn(),
       delete: jest.fn()
     };
-    companyService = new CompanyService(companyRepository, employeeRepository);
+
+    policyRepository = {
+      deleteEmployee: jest.fn()
+    }
+
+    companyService = new CompanyService(companyRepository, employeeRepository, policyRepository);
   });
 
   it('should add company when adding an employee', () => {
@@ -70,6 +76,7 @@ describe('CompanyService', () => {
     // when
     companyService.deleteEmployee(employeeId);
 
+    expect(policyRepository.deleteEmployee.mock.calls.length).toBe(1);
     expect(employeeRepository.delete.mock.calls.length).toBe(1);
   });
 

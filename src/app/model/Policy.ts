@@ -2,7 +2,7 @@ import {RoomTypes} from './RoomTypes';
 
 export class Policy{
 
-  private _roomTypes: RoomTypes[];
+  private _roomTypes: RoomTypes[] = [];
 
 
   get roomTypes(): RoomTypes[] {
@@ -11,5 +11,9 @@ export class Policy{
 
   set roomTypes(value: RoomTypes[]) {
     this._roomTypes = value;
+  }
+
+  public addRoomType(roomType: RoomTypes): void {
+    this.roomTypes.push(roomType);
   }
 }
