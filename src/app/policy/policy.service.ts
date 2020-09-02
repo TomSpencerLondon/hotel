@@ -51,14 +51,10 @@ export class PolicyService {
       companyPolicy = this.policyRepository.findForCompany(employee.company.id);
     }
 
-    if (companyPolicy && employeePolicy){
-      return true;
-    }
-
-    if (companyPolicy){
-      return this.isPolicySufficient(companyPolicy, roomType);
-    }else if (employeePolicy){
+    if (employeePolicy){
       return this.isPolicySufficient(employeePolicy, roomType);
+    }else if (companyPolicy){
+      return this.isPolicySufficient(companyPolicy, roomType);
     }
 
     return true;
