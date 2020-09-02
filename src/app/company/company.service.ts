@@ -30,4 +30,10 @@ addEmployee(companyId: number, employeeId: number): void {
     this.employeeRepository.persist(employee);
   }
   }
+
+  deleteEmployee(employeeId: number): void {
+    if (this.employeeRepository.findById(employeeId)){
+      this.employeeRepository.delete(employeeId);
+    }
+  }
 }

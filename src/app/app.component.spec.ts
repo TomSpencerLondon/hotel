@@ -66,7 +66,22 @@ describe('AppComponent', () => {
     expect(booking.checkOut).toBe(checkOut);
   });
 
+  it('should not allow booking given employee was deleted', () => {
+    // Given
+    const companyId = 1;
+    companyService.addEmployee(companyId, employeeId);
+    const roomTypes = [RoomTypes.STANDARD];
+    policyService.setEmployeePolicy(employeeId, roomTypes);
+    // guard assert
+    expect(policyService.isBookingAllowed(employeeId, roomType)).toBeTruthy();
 
+    // When
+    companyService.deleteEmployee(employeeId);
+
+    // Then
+    expect(policyService.isBookingAllowed(employeeId, roomType)).toBeFalsy();
+
+  });
 
   it(`should fail booking given insufficient company policy`, () => {
     // Given

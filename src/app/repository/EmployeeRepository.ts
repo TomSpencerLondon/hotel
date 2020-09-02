@@ -8,4 +8,7 @@ export class EmployeeRepository {
   public findById(companyId: number): Employee {
     return null;
   }
+
+  delete(employeeId: number): void {
+  }
 }

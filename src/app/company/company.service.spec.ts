@@ -17,7 +17,8 @@ describe('CompanyService', () => {
 
     employeeRepository = {
       persist: jest.fn(),
-      findById: jest.fn()
+      findById: jest.fn(),
+      delete: jest.fn()
     };
     companyService = new CompanyService(companyRepository, employeeRepository);
   });
@@ -60,5 +61,24 @@ describe('CompanyService', () => {
     // then
 
     expect(employeeRepository.persist.mock.calls.length).toBe(0);
+  });
+
+  it('should delete an employee', () => {
+    // given
+    employeeRepository.findById.mockReturnValue(new Employee(employeeId));
+
+    // when
+    companyService.deleteEmployee(employeeId);
+
+    expect(employeeRepository.delete.mock.calls.length).toBe(1);
+  });
+
+  it('should not delete an employee', () => {
+    // when
+    companyService.deleteEmployee(employeeId);
+
+    // then
+    expect(employeeRepository.delete.mock.calls.length).toBe(0);
+
   });
 });

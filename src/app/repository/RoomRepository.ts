@@ -3,7 +3,7 @@ import {RoomTypes} from '../model/RoomTypes';
 
 export class RoomRepository{
 
-  public persist(hotelId: number, roomNumber: number, roomType: string): void {
+  public persist(hotelId: number, roomNumber: number, roomType: RoomTypes): void {
 
   }
 
