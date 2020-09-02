@@ -7,4 +7,5 @@ export class CompanyRepository {
   public findById(companyId: number): Company {
     return null;
   }
+
 }

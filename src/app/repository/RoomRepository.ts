@@ -1,4 +1,5 @@
 import {Room} from '../model/Room';
+import {RoomTypes} from '../model/RoomTypes';
 
 export class RoomRepository{
 
@@ -10,7 +11,7 @@ export class RoomRepository{
     return null;
   }
 
-  update(hotelId: number, roomNumber: number, roomType: string): void {
+  update(hotelId: number, roomNumber: number, roomType: RoomTypes): void {
 
   }
 }

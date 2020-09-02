@@ -4,6 +4,7 @@ import {HotelExistsException} from '../exceptions/hotelExistsException';
 import {HotelRepository} from '../repository/HotelRepository';
 import {RoomRepository} from '../repository/RoomRepository';
 import {HotelNotExistsException} from '../exceptions/hotelNotExistsException';
+import {RoomTypes} from '../model/RoomTypes';
 
 
 
@@ -23,7 +24,7 @@ export class HotelService {
     this.hotelRepository.persist(hotelId, hotelName);
   }
 
-  setRoom(hotelId: number, roomNumber: number, roomType: string): void {
+  setRoom(hotelId: number, roomNumber: number, roomType: RoomTypes): void {
     if (!this.hotelRepository.findById(hotelId)){
       throw new HotelNotExistsException();
     }

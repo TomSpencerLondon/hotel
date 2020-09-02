@@ -1,8 +1,10 @@
+import {RoomTypes} from './RoomTypes';
+
 export class Booking{
 
   private _employeeId: number;
   private _hotelId: number;
-  private _roomType: string;
+  private _roomType: RoomTypes;
   private _checkIn: Date;
   private _checkOut: Date;
   private _uuid: number;
@@ -31,11 +33,11 @@ export class Booking{
     this._hotelId = value;
   }
 
-  get roomType(): string {
+  get roomType(): RoomTypes {
     return this._roomType;
   }
 
-  set roomType(value: string) {
+  set roomType(value: RoomTypes) {
     this._roomType = value;
   }
 

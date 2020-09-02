@@ -10,7 +10,9 @@ import {InsufficientEmployeePolicyException} from './exceptions/insufficientEmpl
 import {HotelRepository} from './repository/HotelRepository';
 import {RoomRepository} from './repository/RoomRepository';
 import {CompanyRepository} from './repository/CompanyRepository';
-import {EmployeeRepository} from "./repository/EmployeeRepository";
+import {EmployeeRepository} from './repository/EmployeeRepository';
+import {PolicyRepository} from './repository/PolicyRepository';
+import {RoomTypes} from './model/RoomTypes';
 describe('AppComponent', () => {
 
   let hotelService: HotelService;
@@ -21,10 +23,11 @@ describe('AppComponent', () => {
   let roomRepository: RoomRepository;
   let companyRepository: CompanyRepository;
   let employeeRepository: EmployeeRepository;
+  let policyRepository: PolicyRepository;
 
   const hotelId = 1;
   const employeeId = 2;
-  const roomType = 'STANDARD';
+  const roomType = RoomTypes.STANDARD;
   const checkIn = new Date('01/01/2020');
   const checkOut = new Date('10/01/2020');
   const hotelName = 'Mariott - London';
@@ -32,11 +35,12 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     hotelRepository = new HotelRepository();
     roomRepository = new RoomRepository();
+    policyRepository = new PolicyRepository();
     hotelService = new HotelService(hotelRepository, roomRepository);
     companyRepository = new CompanyRepository();
     employeeRepository = new EmployeeRepository();
     companyService = new CompanyService(companyRepository, employeeRepository);
-    policyService = new PolicyService();
+    policyService = new PolicyService(policyRepository, employeeRepository);
     bookingService = new BookingService();
   }));
 
@@ -70,12 +74,12 @@ describe('AppComponent', () => {
     hotelService.addHotel(hotelId, hotelName);
     const roomNumber = 1;
     const companyId = 1;
-    hotelService.setRoom(hotelId, roomNumber, 'MASTER');
+    hotelService.setRoom(hotelId, roomNumber, RoomTypes.MASTER);
 
     companyService.addEmployee(companyId, employeeId);
 
-    const roomTypes = ['STANDARD'];
-    policyService.setCompany(companyId, roomTypes);
+    const roomTypes = [RoomTypes.STANDARD];
+    policyService.setCompanyPolicy(companyId, roomTypes);
 
     // When
     // Then
@@ -88,15 +92,15 @@ describe('AppComponent', () => {
     hotelService.addHotel(hotelId, hotelName);
     const roomNumber = 1;
     const companyId = 1;
-    hotelService.setRoom(hotelId, roomNumber, 'MASTER');
+    hotelService.setRoom(hotelId, roomNumber, RoomTypes.MASTER);
 
     companyService.addEmployee(companyId, employeeId);
 
-    const companyRoomTypes = ['STANDARD', 'MASTER'];
-    policyService.setCompany(companyId, companyRoomTypes);
+    const companyRoomTypes = [RoomTypes.STANDARD, RoomTypes.MASTER];
+    policyService.setCompanyPolicy(companyId, companyRoomTypes);
 
-    const employeeRoomTypes = ['STANDARD'];
-    policyService.setEmployee(employeeId, employeeRoomTypes);
+    const employeeRoomTypes = [RoomTypes.STANDARD];
+    policyService.setEmployeePolicy(employeeId, employeeRoomTypes);
     // when
     // Then
     expect(() => bookingService.book(employeeId, hotelId, roomType, checkIn, checkOut))

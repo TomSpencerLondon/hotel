@@ -3,12 +3,15 @@ import {HotelExistsException} from '../exceptions/hotelExistsException';
 import {Hotel} from '../model/Hotel';
 import {Room} from '../model/Room';
 import {HotelNotExistsException} from '../exceptions/hotelNotExistsException';
+import {RoomTypes} from '../model/RoomTypes';
 
 describe('HotelService', () => {
   let hotelService: HotelService;
   let hotelRepository;
   let roomRepository;
 
+  const roomNumber = 1;
+  const roomType = RoomTypes.STANDARD;
   const hotelId = 1;
   const hotelName = 'Marriott - London';
 
@@ -49,10 +52,6 @@ describe('HotelService', () => {
   });
 
   it('should set a room', () => {
-    // given
-    const roomNumber = 1;
-    const roomType = 'STANDARD';
-
     // when
     hotelRepository.findById.mockReturnValue(true);
     hotelService.setRoom(hotelId, roomNumber, roomType);
@@ -63,9 +62,6 @@ describe('HotelService', () => {
 
   it('should update a room', () => {
     // given
-    const roomNumber = 1;
-    const roomType = 'STANDARD';
-
     hotelRepository.findById.mockReturnValue(true);
     roomRepository.findByHotelAndNumber.mockReturnValue(new Room());
 
@@ -79,9 +75,6 @@ describe('HotelService', () => {
 
   it('should ', () => {
     // given
-    const roomNumber = 1;
-    const roomType = 'STANDARD';
-
     hotelRepository.findById.mockReturnValue(false);
 
     // when
