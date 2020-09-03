@@ -29,6 +29,7 @@ addEmployee(companyId: number, employeeId: number): void {
 
   if (!employee) {
     employee = new Employee(employeeId);
+    employee.company = company;
     this.employeeRepository.persist(employee);
   }
   }

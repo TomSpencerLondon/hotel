@@ -4,6 +4,7 @@ import {CompanyPolicy} from '../model/CompanyPolicy';
 
 export class PolicyRepository{
   private employeePolicies = new Map<number, EmployeePolicy>();
+  private companyPolicies  = new Map<number, CompanyPolicy>();
 
   public persistEmployeePolicy(employeeId: number, roomType: RoomTypes): void{
     const employeePolicy = new EmployeePolicy();
@@ -14,7 +15,11 @@ export class PolicyRepository{
   }
 
   persistCompanyPolicy(companyId: number, roomType: RoomTypes): void {
+    const companyPolicy = new CompanyPolicy();
+    companyPolicy.companyId = companyId;
+    companyPolicy.addRoomType(roomType);
 
+    this.companyPolicies.set(companyId, companyPolicy);
   }
 
 
@@ -28,11 +33,12 @@ export class PolicyRepository{
   }
 
   findForCompany(companyId: number): CompanyPolicy {
-    return null;
+    return this.companyPolicies.get(companyId);
   }
 
   updateCompanyPolicy(companyId: number, roomType: RoomTypes): void {
-
+    const companyPolicy = this.findForCompany(companyId);
+    companyPolicy.addRoomType(roomType);
   }
 
   deleteEmployee(employeeId: number): void {
