@@ -5,6 +5,7 @@ import {InsufficientPolicyException} from '../exceptions/insufficientPolicyExcep
 import {NoRoomsAvailableException} from '../exceptions/noRoomsAvailableException';
 import {HotelNotExistsException} from '../exceptions/hotelNotExistsException';
 import {Hotel} from '../model/Hotel';
+import {Room} from '../model/Room';
 
 describe('BookingService', () => {
   let bookingService: BookingService;
@@ -13,6 +14,7 @@ describe('BookingService', () => {
   let bookingRepositoryStub;
   let policyServiceStub;
   let hotelServiceStub;
+  let roomRepositoryStub;
 
   const employeeId = 1;
   const hotelId = 1;
@@ -28,16 +30,22 @@ describe('BookingService', () => {
 
     bookingRepositoryStub = {
       persist: jest.fn(),
-      findAvailableRooms: jest.fn()
+      findAvailableRooms: jest.fn(),
+      findByHotelAndType: jest.fn(),
+      findBookings: jest.fn()
     };
 
     policyServiceStub = {
       isBookingAllowed: jest.fn()
     };
 
+    roomRepositoryStub = {
+      findByHotelAndType: jest.fn()
+    };
+
     const idGenerator = new IdGenerator();
     bookingService = new BookingService(
-      idGenerator, bookingRepositoryStub, policyServiceStub, hotelServiceStub);
+      idGenerator, bookingRepositoryStub, policyServiceStub, hotelServiceStub, roomRepositoryStub);
   });
 
   it('should persist booking', () => {
@@ -45,7 +53,8 @@ describe('BookingService', () => {
     hotelServiceStub.findHotelById.mockReturnValue(new Hotel());
     policyServiceStub.isBookingAllowed.mockReturnValue(true);
     bookingRepositoryStub.findAvailableRooms.mockReturnValue([]);
-
+    const roomNumber = 1;
+    roomRepositoryStub.findByHotelAndType.mockReturnValue([new Room(hotelId, roomNumber, roomType)]);
     // when
     bookingService.book(employeeId, hotelId, roomType, checkIn, checkOut);
 

@@ -63,7 +63,7 @@ describe('HotelService', () => {
   it('should update a room', () => {
     // given
     hotelRepository.findById.mockReturnValue(true);
-    roomRepository.findByHotelAndNumber.mockReturnValue(new Room());
+    roomRepository.findByHotelAndNumber.mockReturnValue(new Room(hotelId, roomNumber, roomType));
 
     // when
     hotelService.setRoom(hotelId, roomNumber, roomType);

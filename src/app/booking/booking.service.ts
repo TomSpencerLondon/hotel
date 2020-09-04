@@ -8,6 +8,7 @@ import {InsufficientPolicyException} from '../exceptions/insufficientPolicyExcep
 import {NoRoomsAvailableException} from '../exceptions/noRoomsAvailableException';
 import {HotelService} from '../hotel/hotel.service';
 import {HotelNotExistsException} from '../exceptions/hotelNotExistsException';
+import {RoomRepository} from '../repository/RoomRepository';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,8 @@ export class BookingService {
   constructor(private idGenerator: IdGenerator,
               private bookingRepository: BookingRepository,
               private policyService: PolicyService,
-              private hotelService: HotelService) { }
+              private hotelService: HotelService,
+              private roomRepository: RoomRepository) { }
 
   book(employeeId: number, hotelId: number, roomType: RoomTypes, checkIn: Date, checkOut: Date): Booking {
     this.validate(employeeId, hotelId, roomType, checkIn, checkOut);
@@ -48,8 +50,24 @@ export class BookingService {
       throw new InsufficientPolicyException('');
     }
 
-    if (!this.bookingRepository.findAvailableRooms(roomType, checkIn, checkOut)){
+    if (!this.checkRoomsAvailable(hotelId, roomType, checkIn, checkOut)){
       throw new NoRoomsAvailableException('');
     }
+  }
+
+
+  private checkRoomsAvailable(hotelId: number, roomType: RoomTypes, checkIn: Date, checkOut: Date): boolean {
+    const rooms = this.roomRepository.findByHotelAndType(hotelId, roomType);
+    if (!rooms || rooms.length === 0){
+      return false;
+    }
+
+    const bookings = this.bookingRepository.findBookings(roomType, checkIn, checkOut);
+
+    if (bookings && (rooms.length === bookings.length)){
+      return false;
+    }
+
+    return true;
   }
 }

@@ -13,6 +13,7 @@ import {EmployeeRepository} from './repository/EmployeeRepository';
 import {PolicyRepository} from './repository/PolicyRepository';
 import {RoomTypes} from './model/RoomTypes';
 import {BookingRepository} from './repository/BookingRepository';
+import {NoRoomsAvailableException} from './exceptions/noRoomsAvailableException';
 
 describe('AppComponent', () => {
 
@@ -52,7 +53,7 @@ describe('AppComponent', () => {
     companyService = new CompanyService(companyRepository, employeeRepository, policyRepository);
     policyService = new PolicyService(policyRepository, employeeRepository);
     bookingService = new BookingService(idGenerator,
-      bookingRepository, policyService, hotelService);
+      bookingRepository, policyService, hotelService, roomRepository);
   }));
 
   it('should booking contain all expected data', () => {
@@ -66,7 +67,7 @@ describe('AppComponent', () => {
 
     idGenerator.generate.mockReturnValue(123);
     bookingService = new BookingService(idGenerator,
-      bookingRepository, policyService, hotelService);
+      bookingRepository, policyService, hotelService, roomRepository);
 
     // when
     const booking: Booking = bookingService.book(employeeId, hotelId, standardRoomType, checkIn, checkOut);
@@ -163,4 +164,38 @@ describe('AppComponent', () => {
       .toThrow(InsufficientPolicyException);
   });
 
+  it('should not book if the dates are already taken', () => {
+    // given
+    const idGenerator = {
+      generate: jest.fn()
+    };
+
+    hotelService.addHotel(hotelId, hotelName);
+    hotelService.setRoom(hotelId, roomNumber, standardRoomType);
+
+    idGenerator.generate.mockReturnValue(123);
+    bookingService = new BookingService(idGenerator,
+      bookingRepository, policyService, hotelService, roomRepository);
+
+    bookingService.book(employeeId, hotelId, standardRoomType, checkIn, checkOut);
+
+    expect(() => bookingService.book(employeeId, hotelId, standardRoomType, checkIn, checkOut))
+      .toThrow(NoRoomsAvailableException);
+  });
+
+  it('should not book if hotel does not have rooms of given type', () => {
+    // given
+    const idGenerator = {
+      generate: jest.fn()
+    };
+
+    hotelService.addHotel(hotelId, hotelName);
+
+    idGenerator.generate.mockReturnValue(123);
+    bookingService = new BookingService(idGenerator,
+      bookingRepository, policyService, hotelService, roomRepository);
+
+    expect(() => bookingService.book(employeeId, hotelId, standardRoomType, checkIn, checkOut))
+      .toThrow(NoRoomsAvailableException);
+  });
 });
